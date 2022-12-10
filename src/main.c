@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[])
 {
-     lexer_T *lexer = init_lexer(
+    lexer_T *lexer = init_lexer(
         "word name1 = \"john\"\n"
         "word name2 = \"mark\"\n"
         "display(name1)\n"
@@ -44,13 +44,13 @@ int main(int argc, char *argv[])
             strcpy(tokenName, "TOKEN_OPERATOR");
             break;
         case 7:
-            strcpy(tokenName,"TOKEN_SLCOMMENT");
+            strcpy(tokenName, "TOKEN_SLCOMMENT");
             break;
         case 8:
-            strcpy(tokenName,"TOKEN_MLCOMMENT");
+            strcpy(tokenName, "TOKEN_MLCOMMENT");
             break;
         case 9:
-            strcpy(tokenName,"TOKEN_INVALID");
+            strcpy(tokenName, "TOKEN_INVALID");
             break;
         }
         printf("%s = %s\n", token->value, tokenName);
