@@ -55,6 +55,21 @@ token_T *lexer_get_next_token(lexer_T *lexer)
         case ')':
             return lexer_advance_with_token(lexer, init_token(TOKEN_RPAREN, lexer_get_current_char_as_string(lexer)));
             break;
+        case '+':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_OPERATOR, lexer_get_current_char_as_string(lexer)));
+            break;
+        case '-':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_OPERATOR, lexer_get_current_char_as_string(lexer)));
+            break;
+        case '/':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_OPERATOR, lexer_get_current_char_as_string(lexer)));
+            break;
+        case '*':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_OPERATOR, lexer_get_current_char_as_string(lexer)));
+            break;
+        case '%':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_OPERATOR, lexer_get_current_char_as_string(lexer)));
+            break;
         }
     }
 
@@ -129,8 +144,7 @@ int identify_if_keyword(char string[])
             "input",
             "case",
             "end",
-            "noreturn",
-        };
+            "noreturn"};
 
         int i, flag = 0;
         for (i = 0; i < 20; ++i)
@@ -144,7 +158,55 @@ int identify_if_keyword(char string[])
         return flag;
     }
 
+    int isOperator(char buffer[])
+    {
+        char operators[4][10] = {"and",
+                                 "powerOf",
+                                 "or",
+                                 "not"};
+
+        int i, flag = 0;
+        for (i = 0; i < 20; ++i)
+        {
+            if (strcmp(operators[i], buffer) == 0)
+            {
+                flag = 1;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    int isReservedWord(char buffer[])
+    {
+        char reservedWords[20][10] = {
+            "num",
+            "decimal",
+            "word",
+            "letter",
+            "boolean"};
+
+        int i, flag = 0;
+        for (i = 0; i < 20; ++i)
+        {
+            if (strcmp(reservedWords[i], buffer) == 0)
+            {
+                flag = 1;
+                break;
+            }
+        }
+        return flag;
+    }
+
     if (isKeyword(string) == 1)
+    {
+        return 1;
+    }
+    else if (isOperator(string) == 1)
+    {
+        return 1;
+    }
+    else if (isReservedWord(string) == 1)
     {
         return 1;
     }

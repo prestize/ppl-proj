@@ -4,12 +4,13 @@ typedef struct TOKEN_STRUCT
 {
     enum
     {
-        TOKEN_ID,
-        TOKEN_EQUALS,
-        TOKEN_WORD,
-        TOKEN_LPAREN,
-        TOKEN_RPAREN,
-        TOKEN_KEYWORD
+        TOKEN_ID,      // 0
+        TOKEN_EQUALS,  // 1
+        TOKEN_WORD,    // 2
+        TOKEN_LPAREN,  // 3
+        TOKEN_RPAREN,  // 4
+        TOKEN_KEYWORD, // 5
+        TOKEN_OPERATOR // 6
 
     } type;
 

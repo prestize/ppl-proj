@@ -1,20 +1,47 @@
 #include <stdio.h>
+#include <string.h>
 #include "include/lexer.h"
 #include "include/token.h"
 
 int main(int argc, char *argv[])
 {
     lexer_T *lexer = init_lexer(
-        "name1 = \"john\"\n"
-        "name2 = \"mark\"\n"
+        "word name1 = \"john\"\n"
+        "word name2 = \"mark\"\n"
         "display(name1)\n"
-        "display(name2)\n");
+        "display(name2)\n"
+        "num a = 3 + 5");
 
     token_T *token = (void *)0;
 
     while ((token = lexer_get_next_token(lexer)) != (void *)0)
     {
-        printf("TOKEN(%d, %s)\n", token->type, token->value);
+        char tokenName[20];
+        switch (token->type)
+        {
+        case 0:
+            strcpy(tokenName, "TOKEN_IDENTIFIER");
+            break;
+        case 1:
+            strcpy(tokenName, "TOKEN_EQUALS");
+            break;
+        case 2:
+            strcpy(tokenName, "TOKEN_WORD");
+            break;
+        case 3:
+            strcpy(tokenName, "TOKEN_LPAREN");
+            break;
+        case 4:
+            strcpy(tokenName, "TOKEN_RPAREN");
+            break;
+        case 5:
+            strcpy(tokenName, "TOKEN_KEYWORD");
+            break;
+        case 6:
+            strcpy(tokenName, "TOKEN_OPERATOR");
+            break;
+        }
+        printf("%s = %s\n", token->value, tokenName);
     }
 
     return 0;
