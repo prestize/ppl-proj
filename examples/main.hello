@@ -1,3 +1,4 @@
-name = "john"
-
-display(name)
+name1 = "john"
+name2 = "mark"
+display(name1)
+display(name2)

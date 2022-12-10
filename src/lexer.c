@@ -97,20 +97,57 @@ token_T *lexer_collect_id(lexer_T *lexer)
         lexer_advance(lexer);
     }
 
+    if (identify_if_keyword(value) == 1)
+        return init_token(TOKEN_KEYWORD, value);
+
     if (count <= 30)
         return init_token(TOKEN_ID, value);
 }
 
-token_T *lexer_collect_keyword(lexer_T *lexer)
+int identify_if_keyword(char string[])
 {
-    char *value = calloc(1, sizeof(char));
-    value[0] = '\0';
 
-    while (isalnum(lexer->c))
+    int isKeyword(char buffer[])
     {
+        char keywords[20][10] = {
+            "powerOf",
+            "if",
+            "else",
+            "then",
+            "elseif",
+            "foreach",
+            "in",
+            "do",
+            "match",
+            "return",
+            "continue",
+            "true",
+            "false",
+            "list",
+            "while",
+            "display",
+            "input",
+            "case",
+            "end",
+            "noreturn",
+        };
+
+        int i, flag = 0;
+        for (i = 0; i < 20; ++i)
+        {
+            if (strcmp(keywords[i], buffer) == 0)
+            {
+                flag = 1;
+                break;
+            }
+        }
+        return flag;
     }
 
-    return init_token(TOKEN_KEYWORD, value);
+    if (isKeyword(string) == 1)
+    {
+        return 1;
+    }
 }
 
 token_T *lexer_advance_with_token(lexer_T *lexer, token_T *token)

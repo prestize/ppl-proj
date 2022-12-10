@@ -21,7 +21,7 @@ token_T *lexer_collect_string(lexer_T *lexer);
 
 token_T *lexer_collect_id(lexer_T *lexer);
 
-token_T *lexer_collect_keyword(lexer_T *lexer);
+int identify_if_keyword(char string[]);
 
 token_T *lexer_advance_with_token(lexer_T *lexer, token_T *token);
 

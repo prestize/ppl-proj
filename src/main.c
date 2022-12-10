@@ -5,8 +5,10 @@
 int main(int argc, char *argv[])
 {
     lexer_T *lexer = init_lexer(
-        "name = \"john\"\n"
-        "display(name)\n");
+        "name1 = \"john\"\n"
+        "name2 = \"mark\"\n"
+        "display(name1)\n"
+        "display(name2)\n");
 
     token_T *token = (void *)0;
 
