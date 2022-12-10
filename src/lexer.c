@@ -79,13 +79,14 @@ token_T *lexer_collect_string(lexer_T *lexer)
 
     lexer_advance(lexer);
 
-    return init_token(TOKEN_STRING, value);
+    return init_token(TOKEN_WORD, value);
 }
 
 token_T *lexer_collect_id(lexer_T *lexer)
 {
     char *value = calloc(1, sizeof(char));
     value[0] = '\0';
+    int count = 0;
 
     while (isalnum(lexer->c))
     {
@@ -96,7 +97,20 @@ token_T *lexer_collect_id(lexer_T *lexer)
         lexer_advance(lexer);
     }
 
-    return init_token(TOKEN_ID, value);
+    if (count <= 30)
+        return init_token(TOKEN_ID, value);
+}
+
+token_T *lexer_collect_keyword(lexer_T *lexer)
+{
+    char *value = calloc(1, sizeof(char));
+    value[0] = '\0';
+
+    while (isalnum(lexer->c))
+    {
+    }
+
+    return init_token(TOKEN_KEYWORD, value);
 }
 
 token_T *lexer_advance_with_token(lexer_T *lexer, token_T *token)

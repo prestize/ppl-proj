@@ -1,4 +1,4 @@
-exec = hello.out
+exec = hello.exe
 sources = $(wildcard src/*.c)
 objects = $(sources:.c=.o)
 flags = -g
@@ -12,7 +12,7 @@ $(exec): $(objects)
 
 install:
 	make
-	cp ./hello.out /usr/local/bin/hello
+	cp ./hello.exe /usr/local/bin/hello
 
 clean:
 	-rm *.out
