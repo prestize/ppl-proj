@@ -10,7 +10,10 @@ typedef struct TOKEN_STRUCT
         TOKEN_LPAREN,  // 3
         TOKEN_RPAREN,  // 4
         TOKEN_KEYWORD, // 5
-        TOKEN_OPERATOR // 6
+        TOKEN_OPERATOR, // 6
+        TOKEN_SLCOMMENT, //7
+        TOKEN_MLCOMMENT, //8
+        TOKEN_INVALID//9
 
     } type;
 

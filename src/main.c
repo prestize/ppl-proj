@@ -5,12 +5,15 @@
 
 int main(int argc, char *argv[])
 {
-    lexer_T *lexer = init_lexer(
+     lexer_T *lexer = init_lexer(
         "word name1 = \"john\"\n"
         "word name2 = \"mark\"\n"
         "display(name1)\n"
         "display(name2)\n"
-        "num a = 3 + 5");
+        "num a = 3 + 5\n"
+        "##this is a MULTI\nLINE COMMENT##\n"
+        "#this is a single line comment\n"
+        "##this is an invalid comment");
 
     token_T *token = (void *)0;
 
@@ -39,6 +42,15 @@ int main(int argc, char *argv[])
             break;
         case 6:
             strcpy(tokenName, "TOKEN_OPERATOR");
+            break;
+        case 7:
+            strcpy(tokenName,"TOKEN_SLCOMMENT");
+            break;
+        case 8:
+            strcpy(tokenName,"TOKEN_MLCOMMENT");
+            break;
+        case 9:
+            strcpy(tokenName,"TOKEN_INVALID");
             break;
         }
         printf("%s = %s\n", token->value, tokenName);

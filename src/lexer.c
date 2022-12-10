@@ -44,6 +44,9 @@ token_T *lexer_get_next_token(lexer_T *lexer)
         if (lexer->c == '"')
             return lexer_collect_string(lexer);
 
+        if (lexer->c == '#')
+            return lexer_collect_comment(lexer);
+
         switch (lexer->c)
         {
         case '=':
@@ -95,6 +98,81 @@ token_T *lexer_collect_string(lexer_T *lexer)
     lexer_advance(lexer);
 
     return init_token(TOKEN_WORD, value);
+}
+
+//this is for identifying comments
+token_T *lexer_collect_comment(lexer_T *lexer)
+{
+   
+    char *value = calloc(1, sizeof(char));
+    value[0] = '\0';
+ 
+    //saves the first '#'
+    char *s = lexer_get_current_char_as_string(lexer);
+    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+    strcat(value, s);
+
+    lexer_advance(lexer);
+    //if next character is not #, it is a single line comment
+    if(lexer->c!='#')
+    {   
+        while (lexer->c != '\n' && lexer->c !='\0') 
+        {
+            s = lexer_get_current_char_as_string(lexer);
+            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+            strcat(value, s);
+
+            lexer_advance(lexer);
+        } 
+
+        return init_token(TOKEN_SLCOMMENT, value);   
+    }
+    
+    //this is for multi-line comment
+    else
+    {   
+        int found =0; // to know if we have closing ## 
+
+        //s holds the current character and nextcharacter holds the next character
+        char *nextcharacter;
+        s = lexer_get_current_char_as_string(lexer); //saves the second #
+            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+            strcat(value, s);
+
+        lexer_advance(lexer);
+        while (lexer->c!='\0')
+        {
+            s = lexer_get_current_char_as_string(lexer);
+            lexer_advance(lexer);
+            nextcharacter = lexer_get_current_char_as_string(lexer);
+            if((*s=='#') && (*nextcharacter=='#')) 
+            {   
+               
+                found=1;
+                value = realloc(value, (strlen(value) + strlen(s) + 2) * sizeof(char));
+                strcat(value, s);
+                strcat(value, nextcharacter);
+                lexer_advance(lexer);
+                break;
+            }
+            else
+            {   
+                value = realloc(value, (strlen(value) + strlen(s) + 2) * sizeof(char));
+                strcat(value, s);
+                strcat(value, nextcharacter);
+                lexer_advance(lexer);
+            }  
+        }
+
+        if (found==1)
+        {
+            return init_token(TOKEN_MLCOMMENT, value);
+        }
+
+        else{
+            return init_token(TOKEN_INVALID, value);
+        }
+    }
 }
 
 token_T *lexer_collect_id(lexer_T *lexer)
