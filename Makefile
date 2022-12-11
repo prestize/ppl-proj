@@ -15,6 +15,6 @@ install:
 	cp ./hello.exe /usr/local/bin/hello
 
 clean:
-	-rm *.out
+	-rm *.exe
 	-rm *.o
 	-rm src/*.o
