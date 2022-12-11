@@ -177,24 +177,179 @@ token_T *lexer_collect_comment(lexer_T *lexer)
 
 token_T *lexer_collect_id(lexer_T *lexer)
 {
+
+    char *nextcharacter;
+
     char *value = calloc(1, sizeof(char));
     value[0] = '\0';
     int count = 0;
 
-    while (isalnum(lexer->c))
+    //gets the first character
+    char *s = lexer_get_current_char_as_string(lexer);
+    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+    strcat(value, s);
+    
+    //if first character is a digit, possibilities: digit, float, or invalid
+    if(isdigit(lexer->c))
     {
-        char *s = lexer_get_current_char_as_string(lexer);
-        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-        strcat(value, s);
-
+        int flag = 0; // 0 if lexeme is number, 1 if lexeme is decimal, 2 if invalid 
         lexer_advance(lexer);
-    }
 
-    if (identify_if_keyword(value) == 1)
-        return init_token(TOKEN_KEYWORD, value);
+        //this is for one-digit num (Ex. 3)
+        if( (lexer->c)==' ' || (lexer->c)=='\0' || (lexer->c)=='\n' || (lexer->c)=='#')
+                return init_token(TOKEN_NUM,value);
 
-    if (count <= 30)
-        return init_token(TOKEN_ID, value);
+        //else continue reading
+        while(isdigit(lexer->c)  )
+        {
+            //if current character is digit, store it to the string
+            s = lexer_get_current_char_as_string(lexer);
+            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+            strcat(value, s);
+
+            lexer_advance(lexer);
+
+            //Ex: 23423 <-- next character is whitespace or '#' which implies comment
+            if( (lexer->c)==' ' || (lexer->c)=='\0' || (lexer->c)=='\n' || (lexer->c)=='#')
+                return init_token(TOKEN_NUM,value);
+        }
+
+        //if current character is not a digit, exit loop then proceed here to check if decimal or invalid or next character is an operator (ex. 23+)
+        s = lexer_get_current_char_as_string(lexer);
+
+        //Ex. 323a <-- a is an alphabet AND not decimal point (.)
+        if(isalnum(*s) && (*s!='.'))
+        {        
+            lexer_advance(lexer);
+            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+            strcat(value, s);
+            flag = 2; //323a cannot be an identifier or keyword, so this has invalid token
+
+            //keep adding character to string if alnum or decimal point(.) Ex. 323a.323ab, 323a.3.2.3.2
+            while((isalnum(lexer->c) || (lexer->c)=='.') && (lexer->c)!='\n' && (lexer->c)!='\0' && (lexer->c)!=' ')
+            {
+               
+                //add ko na yung character after ng perod (.)
+                s = lexer_get_current_char_as_string(lexer);
+                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                strcat(value, s);
+
+                lexer_advance(lexer);
+
+            }
+        }
+
+        //Ex. 323. <-- current character is decimal point (.)
+        else if (*s=='.')
+        {
+            lexer_advance(lexer);
+            nextcharacter=lexer_get_current_char_as_string(lexer);
+
+            //Ex. 323.123 <-- next character after decimal point (.) which is 1 is not whitespace or comment symbol
+            if (*nextcharacter!='\0' && *nextcharacter!=' ' && *nextcharacter!='#')
+            {
+                //if current chracter is (.) dot, and next character is number (Ex. 323.2) <-- possibilities: decimal or invalid
+                if(isdigit(*nextcharacter))
+                {   
+                    flag = 1; 
+                    //add current character to string which is decimal point (.)
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    
+                    //lexer came from nextcharacter from line 246. Then, check the next character after the character after decimal point (Ex. 323.23<-)
+                    while((isalnum(lexer->c) && (lexer->c)!='\n' && (lexer->c)!='\0' && (lexer->c)!=' ') || (lexer->c)=='.')
+                    {   
+                        //Ex. 323.233a <-- a is not a digit, so token is invalid
+                        if(!isdigit(lexer->c))
+                        {
+                            flag = 2;
+                        }
+                        
+                        //add character to string
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+
+                    }
+                }
+
+                //this is if current character is a DOT or is a letter (Ex.23a) <-- after 3, a followed; (Ex. 12.21.1<--decimal point occured more than once)
+                else if (isalpha(*nextcharacter) || *nextcharacter=='.')
+                {
+                    flag = 2;//invalid
+                    
+                    //add letter or decimal point(.)
+                    value = realloc(value, (strlen(value) + strlen(s) + 2) * sizeof(char));
+                    strcat(value, s);
+                    strcat(value, nextcharacter);
+                    lexer_advance(lexer);
+
+                    //continue adding to the string if an operator (or delimiter) is not yet encountered
+                    while ( (isalnum(lexer->c) || (lexer->c)=='.') && (lexer->c)!='\n' && (lexer->c)!=' ' && (lexer->c)!='\0' ) 
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                    }
+                }
+
+                else
+                {
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+                    flag=2;
+                }
+            }
+            
+            else
+            {
+                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                strcat(value, s);
+                flag=2;
+            }
+        }
+
+        // Ex: 4+ <-- + is an operator
+        else
+        {
+            flag = 0;
+        }
+            
+        if(flag==0)
+            return init_token(TOKEN_NUM, value);
+        else if (flag==1)
+            return init_token(TOKEN_DECIMAL,value);
+        else if (flag==2)
+            return init_token(TOKEN_INVALID,value);
+
+        }
+    
+    //if passed character is an alphabet, possibilities: keyword, reserve word, noise word, or invalid
+    else
+        {
+        lexer_advance(lexer);
+        
+            while (isalnum(lexer->c))
+            {
+                char *s = lexer_get_current_char_as_string(lexer);
+                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                strcat(value, s);
+
+                lexer_advance(lexer);
+            }
+
+            if (identify_if_keyword(value) == 1)
+                return init_token(TOKEN_KEYWORD, value);
+
+            if (count <= 30)
+                return init_token(TOKEN_ID, value);
+        }
+
 }
 
 int identify_if_keyword(char string[])

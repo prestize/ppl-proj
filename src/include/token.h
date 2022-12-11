@@ -13,8 +13,9 @@ typedef struct TOKEN_STRUCT
         TOKEN_OPERATOR, // 6
         TOKEN_SLCOMMENT, //7
         TOKEN_MLCOMMENT, //8
-        TOKEN_INVALID//9
-
+        TOKEN_INVALID,//9
+        TOKEN_NUM,  //10
+        TOKEN_DECIMAL   //11
     } type;
 
     char *value;
