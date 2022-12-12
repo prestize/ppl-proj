@@ -340,8 +340,16 @@ token_T *lexer_collect_id(lexer_T *lexer)
             lexer_advance(lexer);
         }
 
-        if (identify_if_keyword(value) == 1)
+        int flag = identify_if_keyword(value);
+
+        if (flag == 1)
             return init_token(TOKEN_KEYWORD, value);
+        else if (flag == 2)
+            return init_token(TOKEN_OPERATOR, value);
+        else if (flag == 3)
+            return init_token(TOKEN_RESVWORD, value);
+        else if (flag == 0)
+            return init_token(TOKEN_ID, value);
 
         if (count <= 30)
             return init_token(TOKEN_ID, value);
@@ -354,7 +362,6 @@ int identify_if_keyword(char string[])
     int isKeyword(char buffer[])
     {
         char keywords[20][10] = {
-            "powerOf",
             "if",
             "else",
             "then",
@@ -395,7 +402,7 @@ int identify_if_keyword(char string[])
                                  "not"};
 
         int i, flag = 0;
-        for (i = 0; i < 20; ++i)
+        for (i = 0; i < 4; ++i)
         {
             if (strcmp(operators[i], buffer) == 0)
             {
@@ -408,7 +415,7 @@ int identify_if_keyword(char string[])
 
     int isReservedWord(char buffer[])
     {
-        char reservedWords[20][10] = {
+        char reservedWords[5][10] = {
             "num",
             "decimal",
             "word",
@@ -416,7 +423,7 @@ int identify_if_keyword(char string[])
             "boolean"};
 
         int i, flag = 0;
-        for (i = 0; i < 20; ++i)
+        for (i = 0; i < 5; ++i)
         {
             if (strcmp(reservedWords[i], buffer) == 0)
             {
@@ -428,17 +435,13 @@ int identify_if_keyword(char string[])
     }
 
     if (isKeyword(string) == 1)
-    {
         return 1;
-    }
     else if (isOperator(string) == 1)
-    {
-        return 1;
-    }
+        return 2;
     else if (isReservedWord(string) == 1)
-    {
-        return 1;
-    }
+        return 3;
+
+    return 0;
 }
 
 token_T *lexer_advance_with_token(lexer_T *lexer, token_T *token)

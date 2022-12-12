@@ -51,6 +51,9 @@ int main(int argc, char *argv[])
         case 11:
             strcpy(tokenName, "TOKEN_DECIMAL");
             break;
+        case 12:
+            strcpy(tokenName, "TOKEN_RESVWORD");
+            break;
         }
         printf("%s = %s\n", token->value, tokenName);
     }
