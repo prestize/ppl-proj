@@ -348,10 +348,8 @@ token_T *lexer_collect_id(lexer_T *lexer)
             return init_token(TOKEN_OPERATOR, value);
         else if (flag == 3)
             return init_token(TOKEN_RESVWORD, value);
-        else if (flag == 0)
-            return init_token(TOKEN_ID, value);
 
-        if (count <= 30)
+        if (flag == 0 && count <= 30)
             return init_token(TOKEN_ID, value);
     }
 }
