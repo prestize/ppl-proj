@@ -1,4 +1,11 @@
-name1 = "john"
-name2 = "mark"
+# this is a sample program
+
+word name1 = "john"
+word name2 = "mark"
+
+num a = 1 + 4
+num b = 2 powerOf 2
+
 display(name1)
 display(name2)
+display(a)

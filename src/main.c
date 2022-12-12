@@ -2,19 +2,11 @@
 #include <string.h>
 #include "include/lexer.h"
 #include "include/token.h"
+#include "include/io.h"
 
 int main(int argc, char *argv[])
 {
-    lexer_T *lexer = init_lexer(
-       "32=3b.a 2.(3.s23thisisinvalid*0.233 100 10a+23. 123b.3\n"
-        "word name1 = \"john\"\n"
-        "word x name2 = \"mark\"\n"
-        "display(name1)\n"
-        "display(name2)\n"
-        "num d = 323.2 + 5+\n"
-        "##this is a MULTI\nLINE COMMENT##\n"
-        "#this is a single line comment\n"
-        "##this is an invalid comment");
+    lexer_T *lexer = init_lexer(get_file_contents(argv[1]));
 
     token_T *token = (void *)0;
 
@@ -58,7 +50,7 @@ int main(int argc, char *argv[])
             break;
         case 11:
             strcpy(tokenName, "TOKEN_DECIMAL");
-            break;    
+            break;
         }
         printf("%s = %s\n", token->value, tokenName);
     }
