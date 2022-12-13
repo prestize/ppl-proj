@@ -47,10 +47,89 @@ token_T *lexer_get_next_token(lexer_T *lexer)
         if (lexer->c == '#')
             return lexer_collect_comment(lexer);
 
+        // delimiters, boolean operators, arithmetic operators (logical operators not included in here)
         switch (lexer->c)
         {
-        case '=':
-            return lexer_advance_with_token(lexer, init_token(TOKEN_EQUALS, lexer_get_current_char_as_string(lexer)));
+        case '=':; //  equals or is equal to
+
+            char *value = calloc(1, sizeof(char));
+            value[0] = '\0';
+
+            char *s = lexer_get_current_char_as_string(lexer);
+            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+            strcat(value, s);
+
+            lexer_advance(lexer);
+
+            if (lexer->c == '=')
+            {
+                s = lexer_get_current_char_as_string(lexer);
+                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                strcat(value, s);
+
+                return lexer_advance_with_token(lexer, init_token(TOKEN_ISEQUALTO, value));
+            }
+            return lexer_advance_with_token(lexer, init_token(TOKEN_EQUALS, value));
+            break;
+        case '>':; // greater than || greater than or equals to
+            value = calloc(1, sizeof(char));
+            value[0] = '\0';
+
+            s = lexer_get_current_char_as_string(lexer);
+            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+            strcat(value, s);
+
+            lexer_advance(lexer);
+
+            if (lexer->c == '=')
+            {
+                s = lexer_get_current_char_as_string(lexer);
+                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                strcat(value, s);
+
+                return lexer_advance_with_token(lexer, init_token(TOKEN_GREATERTHANOREQUALS, value));
+            }
+            return lexer_advance_with_token(lexer, init_token(TOKEN_GREATERTHAN, value));
+            break;
+        case '<':; // less thann || less than or equals to
+            value = calloc(1, sizeof(char));
+            value[0] = '\0';
+
+            s = lexer_get_current_char_as_string(lexer);
+            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+            strcat(value, s);
+
+            lexer_advance(lexer);
+
+            if (lexer->c == '=')
+            {
+                s = lexer_get_current_char_as_string(lexer);
+                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                strcat(value, s);
+
+                return lexer_advance_with_token(lexer, init_token(TOKEN_LESSTHANOREQUALS, value));
+            }
+            return lexer_advance_with_token(lexer, init_token(TOKEN_LESSTHAN, value));
+            break;
+        case '!':; // not equal to
+            value = calloc(1, sizeof(char));
+            value[0] = '\0';
+
+            s = lexer_get_current_char_as_string(lexer);
+            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+            strcat(value, s);
+
+            lexer_advance(lexer);
+
+            if (lexer->c == '=')
+            {
+                s = lexer_get_current_char_as_string(lexer);
+                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                strcat(value, s);
+
+                return lexer_advance_with_token(lexer, init_token(TOKEN_NOTEQUAL, value));
+            }
+            return lexer_advance_with_token(lexer, init_token(TOKEN_INVALID, value));
             break;
         case '(':
             return lexer_advance_with_token(lexer, init_token(TOKEN_LPAREN, lexer_get_current_char_as_string(lexer)));
@@ -58,20 +137,44 @@ token_T *lexer_get_next_token(lexer_T *lexer)
         case ')':
             return lexer_advance_with_token(lexer, init_token(TOKEN_RPAREN, lexer_get_current_char_as_string(lexer)));
             break;
+        case '[':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_LBRACKET, lexer_get_current_char_as_string(lexer)));
+            break;
+        case ']':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_RBRACKET, lexer_get_current_char_as_string(lexer)));
+            break;
+        case '{':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_LBRACE, lexer_get_current_char_as_string(lexer)));
+            break;
+        case '}':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_RBRACE, lexer_get_current_char_as_string(lexer)));
+            break;
         case '+':
-            return lexer_advance_with_token(lexer, init_token(TOKEN_OPERATOR, lexer_get_current_char_as_string(lexer)));
+            return lexer_advance_with_token(lexer, init_token(TOKEN_ADDITION, lexer_get_current_char_as_string(lexer)));
             break;
         case '-':
-            return lexer_advance_with_token(lexer, init_token(TOKEN_OPERATOR, lexer_get_current_char_as_string(lexer)));
+            return lexer_advance_with_token(lexer, init_token(TOKEN_SUBTRACTION, lexer_get_current_char_as_string(lexer)));
             break;
         case '/':
-            return lexer_advance_with_token(lexer, init_token(TOKEN_OPERATOR, lexer_get_current_char_as_string(lexer)));
+            return lexer_advance_with_token(lexer, init_token(TOKEN_DIVISION, lexer_get_current_char_as_string(lexer)));
             break;
         case '*':
-            return lexer_advance_with_token(lexer, init_token(TOKEN_OPERATOR, lexer_get_current_char_as_string(lexer)));
+            return lexer_advance_with_token(lexer, init_token(TOKEN_MULTIPLICATION, lexer_get_current_char_as_string(lexer)));
             break;
         case '%':
-            return lexer_advance_with_token(lexer, init_token(TOKEN_OPERATOR, lexer_get_current_char_as_string(lexer)));
+            return lexer_advance_with_token(lexer, init_token(TOKEN_MODULUS, lexer_get_current_char_as_string(lexer)));
+            break;
+        case '@':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_INTDIV, lexer_get_current_char_as_string(lexer)));
+            break;
+        case '^':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_EXPONENT, lexer_get_current_char_as_string(lexer)));
+            break;
+        case ',':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_COMMA, lexer_get_current_char_as_string(lexer)));
+            break;
+        case ';':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_SEMICOLON, lexer_get_current_char_as_string(lexer)));
             break;
         }
     }
@@ -326,7 +429,7 @@ token_T *lexer_collect_id(lexer_T *lexer)
             return init_token(TOKEN_INVALID, value);
     }
 
-    // if passed character is an alphabet, possibilities: keyword, reserve word, noise word, or invalid
+    // if passed character is an alphabet, possibilities: identifier, keyword, reserve word, noise word, or invalid
     else
     {
         lexer_advance(lexer);
@@ -338,8 +441,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
             strcat(value, s);
 
             lexer_advance(lexer);
+            count++;
         }
 
+        // -- this part will be replaced
         int flag = identify_if_keyword(value);
 
         if (flag == 1)
@@ -348,9 +453,12 @@ token_T *lexer_collect_id(lexer_T *lexer)
             return init_token(TOKEN_OPERATOR, value);
         else if (flag == 3)
             return init_token(TOKEN_RESVWORD, value);
+        // -- up to here
 
-        if (flag == 0 && count <= 30)
+        if (flag == 0 && count < 30)
             return init_token(TOKEN_ID, value);
+        else
+            return init_token(TOKEN_INVALID, value);
     }
 }
 
@@ -395,7 +503,6 @@ int identify_if_keyword(char string[])
     int isOperator(char buffer[])
     {
         char operators[4][10] = {"and",
-                                 "powerOf",
                                  "or",
                                  "not"};
 
