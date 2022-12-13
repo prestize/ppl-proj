@@ -47,7 +47,7 @@ token_T *lexer_get_next_token(lexer_T *lexer)
         if (lexer->c == '#')
             return lexer_collect_comment(lexer);
 
-        // delimiters, boolean operators, arithmetic operators (logical operators not included in here)
+        // delimiters, boolean operators, arithmetic operators (logical operators not yet included in here)
         switch (lexer->c)
         {
         case '=':; //  equals or is equal to
