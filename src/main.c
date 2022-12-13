@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
         switch (token->type)
         {
         case 0:
-            strcpy(tokenName, "TOKEN_IDENTIFIER");
+            strcpy(tokenName, "TOKEN_ID");
             break;
         case 1:
             strcpy(tokenName, "TOKEN_EQUALS");
