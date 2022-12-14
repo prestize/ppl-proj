@@ -459,7 +459,7 @@ token_T *lexer_collect_id(lexer_T *lexer)
                             return lexer_advance_with_token(lexer, init_token(TOKEN_RESVWORD, value));
                         else
                         {
-                            while (isalnum(lexer->c) && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
+                            while ((isalnum(lexer->c) || (lexer->c)=='_') && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
                             {
                                 s = lexer_get_current_char_as_string(lexer);
                                 value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
@@ -538,7 +538,7 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                             return lexer_advance_with_token(lexer, init_token(TOKEN_RESVWORD, value));
                                         else
                                         {
-                                            while (isalnum(lexer->c) && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
+                                            while ((isalnum(lexer->c) || (lexer->c)=='_') && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
                                             {
                                                 s = lexer_get_current_char_as_string(lexer);
                                                 value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
