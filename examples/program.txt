@@ -4,3 +4,36 @@ void main()
     c = a + b
 }
 
+name1 = "john"
+name2 = "mark"
+
+num a = 1 + 4
+num b = 2^2
+num c = 3.1415
+
+##display(name1)
+##display(name2)
+##display(a)
+
+## this is the end
+of sample program##
+
+==
+>=
+<=
+@
+%
+/
+*
+>
+<
+d1sisanidwithlessthan30chars
+d1sisnotanidwithlessthan30chars
+d1sisanidwith30charsssssssssss
+d1splay
+!=
+!
+=
+(){}[];,
+
+num
