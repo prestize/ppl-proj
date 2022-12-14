@@ -23,9 +23,10 @@ token_T *lexer_collect_id(lexer_T *lexer);
 
 token_T *lexer_collect_comment(lexer_T *lexer);
 
-int identify_if_keyword(char string[]);
-
 token_T *lexer_advance_with_token(lexer_T *lexer, token_T *token);
 
 char *lexer_get_current_char_as_string(lexer_T *lexer);
+
+// check note in lexer.c
+// token_T *identify_if_resvword(lexer_T *lexer, char *value, char *s);
 #endif
