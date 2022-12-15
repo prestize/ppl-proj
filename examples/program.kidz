@@ -1,7 +1,14 @@
 # this is a sample program
 
-(num)+,.booleannum
-end
+display("hello world")
+
+word name1 = "orls"
+word name2 = "mark"
+
+num age1 = 20
+num age2 = 21
+
+letter a = 'a'
 
 
 ##this is the end
