@@ -45,7 +45,7 @@ token_T *lexer_get_next_token(lexer_T *lexer)
             return lexer_collect_string(lexer);
 
         if (lexer->c == '\'')
-            return lexer_collect_char(lexer);
+            return lexer_collect_letter(lexer);
 
         if (lexer->c == '#')
             return lexer_collect_comment(lexer);
@@ -223,8 +223,46 @@ token_T *lexer_collect_string(lexer_T *lexer)
     return init_token(TOKEN_WORD, value);
 }
 
-token_T *lexer_collect_char(lexer_T *lexer)
+token_T *lexer_collect_letter(lexer_T *lexer)
 {
+    lexer_advance(lexer);
+
+    char *value = calloc(1, sizeof(char));
+    value[0] = '\0';
+    char *s;
+    while (lexer->c != '\'' && lexer->c != '\0' && lexer->c != '\n')
+    {
+        s = lexer_get_current_char_as_string(lexer);
+        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+        strcat(value, s);
+
+        lexer_advance(lexer);
+    }
+
+    // if single single quote lang, then nextline na or end na, invalid pa rin. Ex. word myletter = '
+    if ((lexer->c == '\0' || lexer->c == '\n') && strlen(value) == 0)
+    {
+        lexer_advance(lexer);
+        return init_token(TOKEN_INVALID, "\'");
+    }
+
+    // ibig sabihin, walang nahanap na closing single quote. Ex: 'h <-- invalid na yung hello
+    else if ((lexer->c == '\0' || lexer->c == '\n'))
+    {
+        lexer_advance(lexer);
+        return init_token(TOKEN_INVALID, value);
+    }
+
+    // kapag more than 1 laman ng value, return invalid token
+    else if (strlen(value) != 1)
+    {
+        lexer_advance(lexer);
+        return init_token(TOKEN_INVALID, value);
+    }
+
+    else
+        lexer_advance(lexer);
+    return init_token(TOKEN_LETTER, value);
 }
 
 // this is for identifying comments
