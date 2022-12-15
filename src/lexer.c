@@ -520,6 +520,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                             lexer_advance(lexer);
                             return init_token(TOKEN_RESVWORD, value);
                         }
+                        else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                        {
+                            return init_token(TOKEN_RESVWORD, value);
+                        }
                     }
                 }
                 else if (lexer->c == 'o')
@@ -583,6 +587,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                                 lexer_advance(lexer);
                                                 return init_token(TOKEN_KEYWORD, value);
                                             }
+                                            else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                            {
+                                                return init_token(TOKEN_KEYWORD, value);
+                                            }
                                         }
                                     }
                                 }
@@ -600,6 +608,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                         if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                         {
                             lexer_advance(lexer);
+                            return init_token(TOKEN_OPERATOR, value);
+                        }
+                        else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                        {
                             return init_token(TOKEN_OPERATOR, value);
                         }
                     }
@@ -661,6 +673,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                             lexer_advance(lexer);
                                             return init_token(TOKEN_RESVWORD, value);
                                         }
+                                        else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                        {
+                                            return init_token(TOKEN_RESVWORD, value);
+                                        }
                                     }
                                 }
                             }
@@ -684,6 +700,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                         lexer_advance(lexer);
                         return init_token(TOKEN_NOISEWORD, value);
                     }
+                    else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                    {
+                        return init_token(TOKEN_NOISEWORD, value);
+                    }
                     if (lexer->c == 'd')
                     {
                         s = lexer_get_current_char_as_string(lexer);
@@ -694,6 +714,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                         if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                         {
                             lexer_advance(lexer);
+                            return init_token(TOKEN_OPERATOR, value);
+                        }
+                        else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                        {
                             return init_token(TOKEN_OPERATOR, value);
                         }
                     }
@@ -713,6 +737,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                     if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                     {
                         lexer_advance(lexer);
+                        return init_token(TOKEN_OPERATOR, value);
+                    }
+                    else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                    {
                         return init_token(TOKEN_OPERATOR, value);
                     }
                 }
@@ -756,6 +784,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                     lexer_advance(lexer);
                                     return init_token(TOKEN_KEYWORD, value);
                                 }
+                                else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                {
+                                    return init_token(TOKEN_KEYWORD, value);
+                                }
                             }
                         }
                     }
@@ -788,6 +820,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                             if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                             {
                                 lexer_advance(lexer);
+                                return init_token(TOKEN_KEYWORD, value);
+                            }
+                            else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                            {
                                 return init_token(TOKEN_KEYWORD, value);
                             }
                         }
@@ -847,6 +883,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                                 lexer_advance(lexer);
                                                 return init_token(TOKEN_KEYWORD, value);
                                             }
+                                            else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                            {
+                                                return init_token(TOKEN_KEYWORD, value);
+                                            }
                                         }
                                     }
                                 }
@@ -898,6 +938,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                         lexer_advance(lexer);
                                         return init_token(TOKEN_KEYWORD, value);
                                     }
+                                    else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                    {
+                                        return init_token(TOKEN_KEYWORD, value);
+                                    }
                                 }
                             }
                         }
@@ -931,6 +975,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                             if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                             {
                                 lexer_advance(lexer);
+                                return init_token(TOKEN_KEYWORD, value);
+                            }
+                            else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                            {
                                 return init_token(TOKEN_KEYWORD, value);
                             }
                         }
@@ -976,6 +1024,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                         lexer_advance(lexer);
                                         return init_token(TOKEN_RESVWORD, value);
                                     }
+                                    else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                    {
+                                        return init_token(TOKEN_RESVWORD, value);
+                                    }
                                 }
                             }
                         }
@@ -1018,6 +1070,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                     lexer_advance(lexer);
                                     return init_token(TOKEN_KEYWORD, value);
                                 }
+                                else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                {
+                                    return init_token(TOKEN_KEYWORD, value);
+                                }
                             }
                         }
                     }
@@ -1046,6 +1102,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                             if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                             {
                                 lexer_advance(lexer);
+                                return init_token(TOKEN_RESVWORD, value);
+                            }
+                            else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                            {
                                 return init_token(TOKEN_RESVWORD, value);
                             }
                         }
@@ -1102,6 +1162,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                             lexer_advance(lexer);
                                             return init_token(TOKEN_KEYWORD, value);
                                         }
+                                        else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                        {
+                                            return init_token(TOKEN_KEYWORD, value);
+                                        }
                                     }
                                 }
                             }
@@ -1141,6 +1205,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                     lexer_advance(lexer);
                                     return init_token(TOKEN_KEYWORD, value);
                                 }
+                                else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                {
+                                    return init_token(TOKEN_KEYWORD, value);
+                                }
                             }
                         }
                     }
@@ -1175,6 +1243,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                 lexer_advance(lexer);
                                 return init_token(TOKEN_KEYWORD, value);
                             }
+                            else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                            {
+                                return init_token(TOKEN_KEYWORD, value);
+                            }
 
                             if (lexer->c == 'i')
                             {
@@ -1193,6 +1265,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                     if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                                     {
                                         lexer_advance(lexer);
+                                        return init_token(TOKEN_KEYWORD, value);
+                                    }
+                                    else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                    {
                                         return init_token(TOKEN_KEYWORD, value);
                                     }
                                 }
@@ -1219,6 +1295,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                             lexer_advance(lexer);
                             return init_token(TOKEN_KEYWORD, value);
                         }
+                        else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                        {
+                            return init_token(TOKEN_KEYWORD, value);
+                        }
                     }
                 }
             }
@@ -1235,6 +1315,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                     if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                     {
                         lexer_advance(lexer);
+                        return init_token(TOKEN_KEYWORD, value);
+                    }
+                    else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                    {
                         return init_token(TOKEN_KEYWORD, value);
                     }
 
@@ -1264,6 +1348,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                     lexer_advance(lexer);
                                     return init_token(TOKEN_KEYWORD, value);
                                 }
+                                else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                {
+                                    return init_token(TOKEN_KEYWORD, value);
+                                }
                             }
                         }
                     }
@@ -1278,6 +1366,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                     if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                     {
                         lexer_advance(lexer);
+                        return init_token(TOKEN_KEYWORD, value);
+                    }
+                    else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                    {
                         return init_token(TOKEN_KEYWORD, value);
                     }
                 }
@@ -1311,6 +1403,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                 lexer_advance(lexer);
                                 return init_token(TOKEN_KEYWORD, value);
                             }
+                            else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                            {
+                                return init_token(TOKEN_KEYWORD, value);
+                            }
                         }
                     }
                 }
@@ -1333,6 +1429,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                             lexer_advance(lexer);
                             return init_token(TOKEN_NOISEWORD, value);
                         }
+                        else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                        {
+                            return init_token(TOKEN_NOISEWORD, value);
+                        }
 
                         if (lexer->c == 'n')
                         {
@@ -1344,6 +1444,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                             if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                             {
                                 lexer_advance(lexer);
+                                return init_token(TOKEN_KEYWORD, value);
+                            }
+                            else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                            {
                                 return init_token(TOKEN_KEYWORD, value);
                             }
                         }
@@ -1400,6 +1504,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                             lexer_advance(lexer);
                                             return init_token(TOKEN_KEYWORD, value);
                                         }
+                                        else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                        {
+                                            return init_token(TOKEN_KEYWORD, value);
+                                        }
                                     }
                                 }
                             }
@@ -1416,6 +1524,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                     if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                     {
                         lexer_advance(lexer);
+                        return init_token(TOKEN_KEYWORD, value);
+                    }
+                    else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                    {
                         return init_token(TOKEN_KEYWORD, value);
                     }
                 }
@@ -1465,6 +1577,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                         {
                                             lexer_advance(lexer);
                                             return init_token(TOKEN_RESVWORD, value);
+                                        }
+                                        else if (!isalnum(lexer->c) && (lexer->c != '_'))
+                                        {
+                                            return init_token(TOKEN_KEYWORD, value);
                                         }
                                     }
                                 }
