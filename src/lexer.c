@@ -176,6 +176,9 @@ token_T *lexer_get_next_token(lexer_T *lexer)
         case ';':
             return lexer_advance_with_token(lexer, init_token(TOKEN_SEMICOLON, lexer_get_current_char_as_string(lexer)));
             break;
+        case '.':
+            return lexer_advance_with_token(lexer, init_token(TOKEN_DOT, lexer_get_current_char_as_string(lexer)));
+            break;
         }
     }
 
@@ -188,18 +191,32 @@ token_T *lexer_collect_string(lexer_T *lexer)
 
     char *value = calloc(1, sizeof(char));
     value[0] = '\0';
-
-    while (lexer->c != '"')
+    char *s;
+    while (lexer->c != '"' && lexer->c != '\0' && lexer->c != '\n')
     {
-        char *s = lexer_get_current_char_as_string(lexer);
+        s = lexer_get_current_char_as_string(lexer);
         value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
         strcat(value, s);
 
         lexer_advance(lexer);
     }
 
-    lexer_advance(lexer);
+    // if double quote lang, then nextline na or end na, invalid pa rin. Ex. word myword = "
+    if ((lexer->c == '\0' || lexer->c == '\n') && strlen(value) == 0)
+    {
+        lexer_advance(lexer);
+        return init_token(TOKEN_INVALID, "\"");
+    }
 
+    // ibig sabihin, walang nahanap na closing double quote. Ex: "hello <-- invalid na yung hello
+    else if ((lexer->c == '\0' || lexer->c == '\n'))
+    {
+        lexer_advance(lexer);
+        return init_token(TOKEN_INVALID, value);
+    }
+
+    else
+        lexer_advance(lexer);
     return init_token(TOKEN_WORD, value);
 }
 
@@ -252,7 +269,7 @@ token_T *lexer_collect_comment(lexer_T *lexer)
             {
 
                 found = 1;
-                value = realloc(value, (strlen(value) + strlen(s) + 2) * sizeof(char));
+                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
                 strcat(value, s);
                 strcat(value, nextcharacter);
                 lexer_advance(lexer);
@@ -260,10 +277,8 @@ token_T *lexer_collect_comment(lexer_T *lexer)
             }
             else
             {
-                value = realloc(value, (strlen(value) + strlen(s) + 2) * sizeof(char));
+                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
                 strcat(value, s);
-                strcat(value, nextcharacter);
-                lexer_advance(lexer);
             }
         }
 
@@ -435,7 +450,7 @@ token_T *lexer_collect_id(lexer_T *lexer)
         while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
         {
 
-            if (lexer->c == 'n')
+            if (lexer->c == 'n') // num, noreturn, not
             {
                 lexer_advance(lexer);
 
@@ -458,12 +473,94 @@ token_T *lexer_collect_id(lexer_T *lexer)
                         if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                         {
                             lexer_advance(lexer);
-                            return init_token(TOKEN_KEYWORD, value);
+                            return init_token(TOKEN_RESVWORD, value);
+                        }
+                    }
+                }
+                else if (lexer->c == 'o')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+
+                    if (lexer->c == 'r')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+
+                        if (lexer->c == 'e')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+
+                            if (lexer->c == 't')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+
+                                if (lexer->c == 'u')
+                                {
+                                    s = lexer_get_current_char_as_string(lexer);
+                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                    strcat(value, s);
+
+                                    lexer_advance(lexer);
+
+                                    if (lexer->c == 'r')
+                                    {
+                                        s = lexer_get_current_char_as_string(lexer);
+                                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                        strcat(value, s);
+
+                                        lexer_advance(lexer);
+
+                                        if (lexer->c == 'n')
+                                        {
+                                            s = lexer_get_current_char_as_string(lexer);
+                                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                            strcat(value, s);
+
+                                            lexer_advance(lexer);
+
+                                            if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                            {
+                                                lexer_advance(lexer);
+                                                return init_token(TOKEN_KEYWORD, value);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (lexer->c == 't')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+
+                        if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                        {
+                            lexer_advance(lexer);
+                            return init_token(TOKEN_OPERATOR, value);
                         }
                     }
                 }
             }
-            else if (lexer->c == 'b')
+            else if (lexer->c == 'b') // boolean
             {
                 lexer_advance(lexer);
 
@@ -517,7 +614,7 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                         if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
                                         {
                                             lexer_advance(lexer);
-                                            return init_token(TOKEN_KEYWORD, value);
+                                            return init_token(TOKEN_RESVWORD, value);
                                         }
                                     }
                                 }
@@ -526,7 +623,7 @@ token_T *lexer_collect_id(lexer_T *lexer)
                     }
                 }
             }
-            else if (lexer->c == 'a')
+            else if (lexer->c == 'a') // an, and
             {
                 lexer_advance(lexer);
 
@@ -542,9 +639,40 @@ token_T *lexer_collect_id(lexer_T *lexer)
                         lexer_advance(lexer);
                         return init_token(TOKEN_NOISEWORD, value);
                     }
+                    if (lexer->c == 'd')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                        {
+                            lexer_advance(lexer);
+                            return init_token(TOKEN_OPERATOR, value);
+                        }
+                    }
                 }
             }
-            else if (lexer->c == 'm')
+            else if (lexer->c == 'o') // or
+            {
+                lexer_advance(lexer);
+
+                if (lexer->c == 'r')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                    {
+                        lexer_advance(lexer);
+                        return init_token(TOKEN_OPERATOR, value);
+                    }
+                }
+            }
+            else if (lexer->c == 'm') // match
             {
                 lexer_advance(lexer);
 
@@ -588,32 +716,717 @@ token_T *lexer_collect_id(lexer_T *lexer)
                     }
                 }
             }
-            else if (lexer->c == 'c')
+            else if (lexer->c == 'c') // case, continue
             {
+                lexer_advance(lexer);
+                if (lexer->c == 'a')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 's')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 'e')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                            {
+                                lexer_advance(lexer);
+                                return init_token(TOKEN_KEYWORD, value);
+                            }
+                        }
+                    }
+                }
+                else if (lexer->c == 'o')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 'n')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 't')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == 'i')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+                                if (lexer->c == 'n')
+                                {
+                                    s = lexer_get_current_char_as_string(lexer);
+                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                    strcat(value, s);
+
+                                    lexer_advance(lexer);
+                                    if (lexer->c == 'u')
+                                    {
+                                        s = lexer_get_current_char_as_string(lexer);
+                                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                        strcat(value, s);
+
+                                        lexer_advance(lexer);
+                                        if (lexer->c == 'e')
+                                        {
+                                            s = lexer_get_current_char_as_string(lexer);
+                                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                            strcat(value, s);
+
+                                            lexer_advance(lexer);
+                                            if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                            {
+                                                lexer_advance(lexer);
+                                                return init_token(TOKEN_KEYWORD, value);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            else if (lexer->c == 'r')
+            else if (lexer->c == 'r') // return
             {
+                lexer_advance(lexer);
+                if (lexer->c == 'e')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 't')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 'u')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == 'r')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+                                if (lexer->c == 'n')
+                                {
+                                    s = lexer_get_current_char_as_string(lexer);
+                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                    strcat(value, s);
+
+                                    lexer_advance(lexer);
+                                    if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                    {
+                                        lexer_advance(lexer);
+                                        return init_token(TOKEN_KEYWORD, value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            else if (lexer->c == 'l')
+            else if (lexer->c == 'l') // list, letter
             {
+                lexer_advance(lexer);
+                if (lexer->c == 'i')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 's')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 't')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                            {
+                                lexer_advance(lexer);
+                                return init_token(TOKEN_KEYWORD, value);
+                            }
+                        }
+                    }
+                }
+                else if (lexer->c == 'e')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 't')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 't')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == 'e')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+                                if (lexer->c == 'r')
+                                {
+                                    s = lexer_get_current_char_as_string(lexer);
+                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                    strcat(value, s);
+
+                                    lexer_advance(lexer);
+                                    if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                    {
+                                        lexer_advance(lexer);
+                                        return init_token(TOKEN_RESVWORD, value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            else if (lexer->c == 'w')
+            else if (lexer->c == 'w') // while, word
             {
+                lexer_advance(lexer);
+                if (lexer->c == 'h')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 'i')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 'l')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == 'e')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+                                if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                {
+                                    lexer_advance(lexer);
+                                    return init_token(TOKEN_KEYWORD, value);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (lexer->c == 'o') // word
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 'r')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 'd')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                            {
+                                lexer_advance(lexer);
+                                return init_token(TOKEN_RESVWORD, value);
+                            }
+                        }
+                    }
+                }
             }
-            else if (lexer->c == 'f')
+            else if (lexer->c == 'f') // foreach, false
             {
+                lexer_advance(lexer);
+                if (lexer->c == 'o')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 'r')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 'e')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == 'a')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+                                if (lexer->c == 'c')
+                                {
+                                    s = lexer_get_current_char_as_string(lexer);
+                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                    strcat(value, s);
+
+                                    lexer_advance(lexer);
+                                    if (lexer->c == 'h')
+                                    {
+                                        s = lexer_get_current_char_as_string(lexer);
+                                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                        strcat(value, s);
+
+                                        lexer_advance(lexer);
+                                        if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                        {
+                                            lexer_advance(lexer);
+                                            return init_token(TOKEN_KEYWORD, value);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (lexer->c == 'a')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 'l')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 's')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == 'e')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+                                if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                {
+                                    lexer_advance(lexer);
+                                    return init_token(TOKEN_KEYWORD, value);
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            else if (lexer->c == 'e')
+            else if (lexer->c == 'e') // else, elseif, end
             {
+                lexer_advance(lexer);
+                if (lexer->c == 'l')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 's')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 'e')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                            {
+                                lexer_advance(lexer);
+                                return init_token(TOKEN_KEYWORD, value);
+                            }
+
+                            if (lexer->c == 'i')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+                                if (lexer->c == 'f')
+                                {
+                                    s = lexer_get_current_char_as_string(lexer);
+                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                    strcat(value, s);
+
+                                    lexer_advance(lexer);
+                                    if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                    {
+                                        lexer_advance(lexer);
+                                        return init_token(TOKEN_KEYWORD, value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (lexer->c == 'n')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 'd')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                        {
+                            lexer_advance(lexer);
+                            return init_token(TOKEN_KEYWORD, value);
+                        }
+                    }
+                }
             }
-            else if (lexer->c == 'i')
+            else if (lexer->c == 'i') // in, if, input
             {
+                lexer_advance(lexer);
+                if (lexer->c == 'n')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                    {
+                        lexer_advance(lexer);
+                        return init_token(TOKEN_KEYWORD, value);
+                    }
+
+                    if (lexer->c == 'p')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 'u')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == 't')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+                                if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                {
+                                    lexer_advance(lexer);
+                                    return init_token(TOKEN_KEYWORD, value);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (lexer->c == 'f')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                    {
+                        lexer_advance(lexer);
+                        return init_token(TOKEN_KEYWORD, value);
+                    }
+                }
             }
-            else if (lexer->c == 't')
+            else if (lexer->c == 't') // true, the, then
             {
+                lexer_advance(lexer);
+                if (lexer->c == 'r')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 'u')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 'e')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                            {
+                                lexer_advance(lexer);
+                                return init_token(TOKEN_KEYWORD, value);
+                            }
+                        }
+                    }
+                }
+                else if (lexer->c == 'h') // the, then
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 'e')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n') // the
+                        {
+                            lexer_advance(lexer);
+                            return init_token(TOKEN_NOISEWORD, value);
+                        }
+
+                        if (lexer->c == 'n')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+                            lexer_advance(lexer);
+
+                            if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                            {
+                                lexer_advance(lexer);
+                                return init_token(TOKEN_KEYWORD, value);
+                            }
+                        }
+                    }
+                }
             }
-            else if (lexer->c == 'd')
+            else if (lexer->c == 'd') // display, do, decimal
             {
+                lexer_advance(lexer);
+                if (lexer->c == 'i')
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 's')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 'p')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == 'l')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+                                if (lexer->c == 'a')
+                                {
+                                    s = lexer_get_current_char_as_string(lexer);
+                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                    strcat(value, s);
+
+                                    lexer_advance(lexer);
+                                    if (lexer->c == 'y')
+                                    {
+                                        s = lexer_get_current_char_as_string(lexer);
+                                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                        strcat(value, s);
+
+                                        lexer_advance(lexer);
+                                        if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                        {
+                                            lexer_advance(lexer);
+                                            return init_token(TOKEN_KEYWORD, value);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (lexer->c == 'o') // do
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                    {
+                        lexer_advance(lexer);
+                        return init_token(TOKEN_KEYWORD, value);
+                    }
+                }
+                else if (lexer->c == 'e') // decimal
+                {
+                    s = lexer_get_current_char_as_string(lexer);
+                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                    strcat(value, s);
+
+                    lexer_advance(lexer);
+                    if (lexer->c == 'c')
+                    {
+                        s = lexer_get_current_char_as_string(lexer);
+                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                        strcat(value, s);
+
+                        lexer_advance(lexer);
+                        if (lexer->c == 'i')
+                        {
+                            s = lexer_get_current_char_as_string(lexer);
+                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                            strcat(value, s);
+
+                            lexer_advance(lexer);
+                            if (lexer->c == 'm')
+                            {
+                                s = lexer_get_current_char_as_string(lexer);
+                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                strcat(value, s);
+
+                                lexer_advance(lexer);
+                                if (lexer->c == 'a')
+                                {
+                                    s = lexer_get_current_char_as_string(lexer);
+                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                    strcat(value, s);
+
+                                    lexer_advance(lexer);
+                                    if (lexer->c == 'l')
+                                    {
+                                        s = lexer_get_current_char_as_string(lexer);
+                                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                                        strcat(value, s);
+
+                                        lexer_advance(lexer);
+                                        if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
+                                        {
+                                            lexer_advance(lexer);
+                                            return init_token(TOKEN_RESVWORD, value);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
             else
             {
@@ -638,26 +1451,10 @@ token_T *lexer_collect_id(lexer_T *lexer)
 
             if (strlen(value) > 31)
             {
-                lexer_advance;
+                lexer_advance(lexer);
                 return init_token(TOKEN_INVALID, value);
             }
             return init_token(TOKEN_ID, value);
-
-            // // -- this part will be replaced
-            // int flag = identify_if_keyword(value);
-
-            // if (flag == 1)
-            //     return init_token(TOKEN_KEYWORD, value);
-            // else if (flag == 2)
-            //     return init_token(TOKEN_OPERATOR, value);
-            // else if (flag == 3)
-            //     return init_token(TOKEN_RESVWORD, value);
-            // // -- up to here
-
-            // if (flag == 0 && count < 30)
-            //     return init_token(TOKEN_ID, value);
-            // else
-            //     return init_token(TOKEN_INVALID, value);
         }
     }
 }
@@ -677,35 +1474,3 @@ char *lexer_get_current_char_as_string(lexer_T *lexer)
 
     return str;
 }
-
-//  cannot get return value here
-
-// token_T *identify_if_resvword(lexer_T *lexer, char *value, char *s)
-// {
-//     printf("%s-", value);
-
-//     lexer_advance(lexer);
-
-//     if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
-//     {
-//         printf("%s-", value);
-
-//         return lexer_advance_with_token(lexer, init_token(TOKEN_NOISEWORD, value));
-//     }
-//     else
-//     {
-//         while (isalnum(lexer->c) && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-//         {
-//             s = lexer_get_current_char_as_string(lexer);
-//             value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-//             strcat(value, s);
-
-//             lexer_advance(lexer);
-//         }
-
-//         if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-//             lexer_advance(lexer);
-
-//         return init_token(TOKEN_ID, value);
-//     }
-// }
