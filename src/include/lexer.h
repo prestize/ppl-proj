@@ -19,6 +19,8 @@ token_T *lexer_get_next_token(lexer_T *lexer);
 
 token_T *lexer_collect_string(lexer_T *lexer);
 
+token_T *lexer_collect_char(lexer_T *lexer);
+
 token_T *lexer_collect_id(lexer_T *lexer);
 
 token_T *lexer_collect_comment(lexer_T *lexer);
@@ -27,6 +29,4 @@ token_T *lexer_advance_with_token(lexer_T *lexer, token_T *token);
 
 char *lexer_get_current_char_as_string(lexer_T *lexer);
 
-// check note in lexer.c
-// token_T *identify_if_resvword(lexer_T *lexer, char *value, char *s);
 #endif

@@ -44,6 +44,9 @@ token_T *lexer_get_next_token(lexer_T *lexer)
         if (lexer->c == '"')
             return lexer_collect_string(lexer);
 
+        if (lexer->c == '\'')
+            return lexer_collect_char(lexer);
+
         if (lexer->c == '#')
             return lexer_collect_comment(lexer);
 
@@ -218,6 +221,10 @@ token_T *lexer_collect_string(lexer_T *lexer)
     else
         lexer_advance(lexer);
     return init_token(TOKEN_WORD, value);
+}
+
+token_T *lexer_collect_char(lexer_T *lexer)
+{
 }
 
 // this is for identifying comments
