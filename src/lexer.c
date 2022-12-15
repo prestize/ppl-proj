@@ -460,87 +460,7 @@ token_T *lexer_collect_id(lexer_T *lexer)
                             lexer_advance(lexer);
                             return init_token(TOKEN_KEYWORD, value);
                         }
-                        // if hindi pa rin natapos sa num yung string (ex. numm)
-                        else
-                        {
-                            s = lexer_get_current_char_as_string(lexer);
-                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                            while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                            {
-                                s = lexer_get_current_char_as_string(lexer);
-                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                                strcat(value, s);
-
-                                // printf("%d ", strlen(value));
-
-                                lexer_advance(lexer);
-                            }
-
-                            if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                            {
-                                lexer_advance(lexer);
-                            }
-
-                            if (strlen(value) > 31)
-                            {
-                                lexer_advance;
-                                return init_token(TOKEN_INVALID, value);
-                            }
-                            return init_token(TOKEN_ID, value);
-                        }
                     }
-                    else
-                    {
-                        // if hindi m yung sunod ng nu (Ex. nua)
-                        s = lexer_get_current_char_as_string(lexer);
-                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                        while (isalnum(lexer->c) && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                        {
-                            s = lexer_get_current_char_as_string(lexer);
-                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                            strcat(value, s);
-
-                            lexer_advance(lexer);
-                        }
-
-                        if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                            lexer_advance(lexer);
-
-                        if (strlen(value) > 31)
-                        {
-                            lexer_advance;
-                            return init_token(TOKEN_INVALID, value);
-                        }
-                        return init_token(TOKEN_ID, value);
-                    }
-                }
-                else
-                {
-                    // if hindi u yung sunod ng n (Ex. na)
-                    s = lexer_get_current_char_as_string(lexer);
-                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                    while (isalnum(lexer->c) && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                    {
-                        s = lexer_get_current_char_as_string(lexer);
-                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                        strcat(value, s);
-
-                        lexer_advance(lexer);
-                    }
-
-                    if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                        lexer_advance(lexer);
-
-                    if (strlen(value) > 31)
-                    {
-                        lexer_advance;
-                        return init_token(TOKEN_INVALID, value);
-                    }
-
-                    return init_token(TOKEN_ID, value);
                 }
             }
             else if (lexer->c == 'b')
@@ -599,194 +519,11 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                             lexer_advance(lexer);
                                             return init_token(TOKEN_KEYWORD, value);
                                         }
-                                        // if hindi pa rin natapos sa boolean yung string (ex. booleann)
-                                        else
-                                        {
-                                            s = lexer_get_current_char_as_string(lexer);
-                                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                                            while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                                            {
-                                                s = lexer_get_current_char_as_string(lexer);
-                                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                                                strcat(value, s);
-
-                                                lexer_advance(lexer);
-                                            }
-
-                                            if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                                                lexer_advance(lexer);
-
-                                            if (strlen(value) > 31)
-                                            {
-                                                lexer_advance;
-                                                return init_token(TOKEN_INVALID, value);
-                                            }
-
-                                            return init_token(TOKEN_ID, value);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (lexer->c == ' ' || lexer->c == '\0' || lexer->c == '\n')
-                                            return lexer_advance_with_token(lexer, init_token(TOKEN_RESVWORD, value));
-                                        else
-                                        {
-                                            while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                                            {
-                                                s = lexer_get_current_char_as_string(lexer);
-                                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                                                strcat(value, s);
-
-                                                lexer_advance(lexer);
-                                            }
-
-                                            if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                                                lexer_advance(lexer);
-
-                                            if (strlen(value) > 31)
-                                            {
-                                                lexer_advance;
-                                                return init_token(TOKEN_INVALID, value);
-                                            }
-
-                                            return init_token(TOKEN_ID, value);
-                                        }
                                     }
                                 }
-                                else
-                                {
-                                    // if hindi a yung sunod ng boole (Ex. boolee)
-                                    s = lexer_get_current_char_as_string(lexer);
-                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                                    while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                                    {
-                                        s = lexer_get_current_char_as_string(lexer);
-                                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                                        strcat(value, s);
-
-                                        lexer_advance(lexer);
-                                    }
-
-                                    if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                                        lexer_advance(lexer);
-
-                                    if (strlen(value) > 31)
-                                    {
-                                        lexer_advance;
-                                        return init_token(TOKEN_INVALID, value);
-                                    }
-
-                                    return init_token(TOKEN_ID, value);
-                                }
-                            }
-                            else
-                            {
-                                // if hindi e yung sunod ng bool (Ex. boola)
-                                s = lexer_get_current_char_as_string(lexer);
-                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                                while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                                {
-                                    s = lexer_get_current_char_as_string(lexer);
-                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                                    strcat(value, s);
-
-                                    lexer_advance(lexer);
-                                }
-
-                                if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                                    lexer_advance(lexer);
-
-                                if (strlen(value) > 31)
-                                {
-                                    lexer_advance;
-                                    return init_token(TOKEN_INVALID, value);
-                                }
-
-                                return init_token(TOKEN_ID, value);
                             }
                         }
-                        else
-                        {
-                            // if hindi l yung sunod ng boo (Ex. booa)
-                            s = lexer_get_current_char_as_string(lexer);
-                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                            while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                            {
-                                s = lexer_get_current_char_as_string(lexer);
-                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                                strcat(value, s);
-
-                                lexer_advance(lexer);
-                            }
-
-                            if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                                lexer_advance(lexer);
-
-                            if (strlen(value) > 31)
-                            {
-                                lexer_advance;
-                                return init_token(TOKEN_INVALID, value);
-                            }
-
-                            return init_token(TOKEN_ID, value);
-                        }
                     }
-                    else
-                    {
-                        // if hindi  yung sunod ng bo (Ex. boa)
-                        s = lexer_get_current_char_as_string(lexer);
-                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                        while (isalnum(lexer->c) && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                        {
-                            s = lexer_get_current_char_as_string(lexer);
-                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                            strcat(value, s);
-
-                            lexer_advance(lexer);
-                        }
-
-                        if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                            lexer_advance(lexer);
-
-                        if (strlen(value) > 31)
-                        {
-                            lexer_advance;
-                            return init_token(TOKEN_INVALID, value);
-                        }
-
-                        return init_token(TOKEN_ID, value);
-                    }
-                }
-                else
-                {
-                    // if hindi o yung sunod ng b (Ex. ba)
-                    s = lexer_get_current_char_as_string(lexer);
-                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                    while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                    {
-                        s = lexer_get_current_char_as_string(lexer);
-                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                        strcat(value, s);
-
-                        lexer_advance(lexer);
-                    }
-
-                    if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                        lexer_advance(lexer);
-
-                    if (strlen(value) > 31)
-                    {
-                        lexer_advance;
-                        return init_token(TOKEN_INVALID, value);
-                    }
-
-                    return init_token(TOKEN_ID, value);
                 }
             }
             else if (lexer->c == 'a')
@@ -805,56 +542,6 @@ token_T *lexer_collect_id(lexer_T *lexer)
                         lexer_advance(lexer);
                         return init_token(TOKEN_NOISEWORD, value);
                     }
-                    else
-                    {
-                        s = lexer_get_current_char_as_string(lexer);
-                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                        while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                        {
-                            s = lexer_get_current_char_as_string(lexer);
-                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                            strcat(value, s);
-
-                            lexer_advance(lexer);
-                        }
-
-                        if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                            lexer_advance(lexer);
-
-                        if (strlen(value) > 31)
-                        {
-                            lexer_advance;
-                            return init_token(TOKEN_INVALID, value);
-                        }
-
-                        return init_token(TOKEN_ID, value);
-                    }
-                }
-                else
-                {
-                    s = lexer_get_current_char_as_string(lexer);
-                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                    while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                    {
-                        s = lexer_get_current_char_as_string(lexer);
-                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                        strcat(value, s);
-
-                        lexer_advance(lexer);
-                    }
-
-                    if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                        lexer_advance(lexer);
-
-                    if (strlen(value) > 31)
-                    {
-                        lexer_advance;
-                        return init_token(TOKEN_INVALID, value);
-                    }
-
-                    return init_token(TOKEN_ID, value);
                 }
             }
             else if (lexer->c == 'm')
@@ -896,134 +583,9 @@ token_T *lexer_collect_id(lexer_T *lexer)
                                     lexer_advance(lexer);
                                     return init_token(TOKEN_KEYWORD, value);
                                 }
-                                else
-                                {
-                                    s = lexer_get_current_char_as_string(lexer);
-                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                                    while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                                    {
-                                        s = lexer_get_current_char_as_string(lexer);
-                                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                                        strcat(value, s);
-
-                                        lexer_advance(lexer);
-                                    }
-
-                                    if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                                        lexer_advance(lexer);
-
-                                    if (strlen(value) > 31)
-                                    {
-                                        lexer_advance;
-                                        return init_token(TOKEN_INVALID, value);
-                                    }
-
-                                    return init_token(TOKEN_ID, value);
-                                }
-                            }
-                            else
-                            {
-                                s = lexer_get_current_char_as_string(lexer);
-                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                                while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                                {
-                                    s = lexer_get_current_char_as_string(lexer);
-                                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                                    strcat(value, s);
-
-                                    lexer_advance(lexer);
-                                }
-
-                                if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                                    lexer_advance(lexer);
-
-                                if (strlen(value) > 31)
-                                {
-                                    lexer_advance;
-                                    return init_token(TOKEN_INVALID, value);
-                                }
-
-                                return init_token(TOKEN_ID, value);
                             }
                         }
-                        else
-                        {
-                            s = lexer_get_current_char_as_string(lexer);
-                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                            while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                            {
-                                s = lexer_get_current_char_as_string(lexer);
-                                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                                strcat(value, s);
-
-                                lexer_advance(lexer);
-                            }
-
-                            if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                                lexer_advance(lexer);
-
-                            if (strlen(value) > 31)
-                            {
-                                lexer_advance;
-                                return init_token(TOKEN_INVALID, value);
-                            }
-
-                            return init_token(TOKEN_ID, value);
-                        }
                     }
-                    else
-                    {
-                        s = lexer_get_current_char_as_string(lexer);
-                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                        while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                        {
-                            s = lexer_get_current_char_as_string(lexer);
-                            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                            strcat(value, s);
-
-                            lexer_advance(lexer);
-                        }
-
-                        if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                            lexer_advance(lexer);
-
-                        if (strlen(value) > 31)
-                        {
-                            lexer_advance;
-                            return init_token(TOKEN_INVALID, value);
-                        }
-
-                        return init_token(TOKEN_ID, value);
-                    }
-                }
-                else
-                {
-                    s = lexer_get_current_char_as_string(lexer);
-                    value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-
-                    while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
-                    {
-                        s = lexer_get_current_char_as_string(lexer);
-                        value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
-                        strcat(value, s);
-
-                        lexer_advance(lexer);
-                    }
-
-                    if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
-                        lexer_advance(lexer);
-
-                    if (strlen(value) > 31)
-                    {
-                        lexer_advance;
-                        return init_token(TOKEN_INVALID, value);
-                    }
-
-                    return init_token(TOKEN_ID, value);
                 }
             }
             else if (lexer->c == 'c')
@@ -1053,6 +615,33 @@ token_T *lexer_collect_id(lexer_T *lexer)
             else if (lexer->c == 'd')
             {
             }
+            else
+            {
+                lexer_advance(lexer);
+            }
+            s = lexer_get_current_char_as_string(lexer);
+            value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+
+            while (isalnum(lexer->c) || (lexer->c) == '_' && (lexer->c) != ' ' && (lexer->c) != '\n' && (lexer->c) != '\0')
+            {
+                s = lexer_get_current_char_as_string(lexer);
+                value = realloc(value, (strlen(value) + strlen(s) + 1) * sizeof(char));
+                strcat(value, s);
+
+                lexer_advance(lexer);
+            }
+
+            if ((lexer->c) == ' ' && (lexer->c) == '\n' && (lexer->c) == '\0')
+            {
+                lexer_advance(lexer);
+            }
+
+            if (strlen(value) > 31)
+            {
+                lexer_advance;
+                return init_token(TOKEN_INVALID, value);
+            }
+            return init_token(TOKEN_ID, value);
 
             // // -- this part will be replaced
             // int flag = identify_if_keyword(value);
