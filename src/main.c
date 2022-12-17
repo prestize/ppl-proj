@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     }
     while ((token = lexer_get_next_token(lexer)) != (void *)0)
     {
-        char tokenName[20];
+        char tokenName[64];
         switch (token->type)
         {
         case 0:
@@ -131,6 +131,8 @@ int main(int argc, char *argv[])
 
         // printf("( %d\t%s )\n", token->type, token->value);
     }
+
+    printf("Symbol Table successfully printed!\n");
 
     return 0;
 }

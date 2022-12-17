@@ -26,5 +26,9 @@ a--------TOKEN_LETTER
 and--------TOKEN_OPERATOR
 or--------TOKEN_OPERATOR
 not--------TOKEN_OPERATOR
+d1sisanidwithlessthan31chars--------TOKEN_ID
+d1sisnotanidwithmorethan31charss--------TOKEN_INVALID
+d1sisanidwith31charssssssssssss--------TOKEN_ID
+d1splay--------TOKEN_ID
 ##this is the end
 of program##--------TOKEN_MLCOMMENT
