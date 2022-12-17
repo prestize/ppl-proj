@@ -1,0 +1,30 @@
+# this is a sample program--------TOKEN_SLCOMMENT
+display--------TOKEN_KEYWORD
+(--------TOKEN_LPAREN
+hello world--------TOKEN_WORD
+)--------TOKEN_RPAREN
+word--------TOKEN_RESVWORD
+name1--------TOKEN_ID
+=--------TOKEN_EQUALS
+orls--------TOKEN_WORD
+word--------TOKEN_RESVWORD
+name2--------TOKEN_ID
+=--------TOKEN_EQUALS
+mark--------TOKEN_WORD
+num--------TOKEN_RESVWORD
+age1--------TOKEN_ID
+=--------TOKEN_EQUALS
+20--------TOKEN_NUM
+num--------TOKEN_RESVWORD
+age2--------TOKEN_ID
+=--------TOKEN_EQUALS
+21--------TOKEN_NUM
+letter--------TOKEN_RESVWORD
+a--------TOKEN_ID
+=--------TOKEN_EQUALS
+a--------TOKEN_LETTER
+and--------TOKEN_OPERATOR
+or--------TOKEN_OPERATOR
+not--------TOKEN_OPERATOR
+##this is the end
+of program##--------TOKEN_MLCOMMENT
