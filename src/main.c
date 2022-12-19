@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
             strcpy(tokenName, "TOKEN_NOISEWORD");
             break;
         case 33:
-            strcpy(tokenName, "TOKEN_DOT");
+            strcpy(tokenName, "TOKEN_COLON");
             break;
         case 34:
             strcpy(tokenName, "TOKEN_LETTER");
